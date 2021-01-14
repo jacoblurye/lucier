@@ -36,12 +36,12 @@ mult = utils.random_iter([1, 2])
 async def harps(ctrl: MidiController, tick: int):
     ratio = utils.incperc(tick, 0.001)
     if (
-        utils.every_n_ticks(75, tick + utils.randint(-20, 20))
+        utils.every_n_ticks(75, tick + utils.r.randint(-20, 20))
         and utils.coin_flip(0.9 * ratio)
     ) or utils.coin_flip(0.04):
         await ctrl.play_note(
             get_note(tick) + 12 + next(up) + next(up) + next(rare_up) - next(up),
-            utils.sine(tick, 80, 100 + 26 * ratio, 75) + utils.randint(-5, 5),
+            utils.sine(tick, 80, 100 + 26 * ratio, 75) + utils.r.randint(-5, 5),
             1,
         )
 
@@ -50,13 +50,15 @@ async def harps(ctrl: MidiController, tick: int):
 async def synth(ctrl: MidiController, tick: int):
 
     if utils.every_n_ticks(100, tick):
-        await ctrl.play_note(get_note(tick, bass_chords) - 24, utils.randint(60, 90), 3)
+        await ctrl.play_note(
+            get_note(tick, bass_chords) - 24, utils.r.randint(60, 90), 3
+        )
 
-    if utils.every_n_ticks(100, tick + utils.randint(15, 65)):
-        await ctrl.play_note(get_note(tick), utils.randint(20, 55), 3)
+    if utils.every_n_ticks(100, tick + utils.r.randint(15, 65)):
+        await ctrl.play_note(get_note(tick), utils.r.randint(20, 55), 3)
 
     if tick % 50:
-        ctrl.set_cc(10, utils.randint(10, 117))
+        ctrl.set_cc(10, utils.r.randint(10, 117))
 
     ctrl.set_cc(1, utils.sine(tick, 0, 5, 100))
 
@@ -73,12 +75,13 @@ async def strings(ctrl: MidiController, tick: int):
 
     random_play = utils.coin_flip(0.05 + 0.05 * ratio)
     if (
-        utils.every_n_ticks(100 + utils.randint(40, 60), tick) and utils.coin_flip(0.5)
+        utils.every_n_ticks(100 + utils.r.randint(40, 60), tick)
+        and utils.coin_flip(0.5)
     ) or random_play:
         await ctrl.play_note(
             get_note(tick) + next(up) + next(up) + next(rare_up),
             50,
-            0.75 + utils.randint(-1, 2),
+            0.75 + utils.r.randint(-1, 2),
         )
 
 

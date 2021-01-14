@@ -18,8 +18,8 @@ async def slow_boy(ctrl: MidiController, tick: int):
         )
 
     if tick % 50:
-        ctrl.set_cc(10, utils.randint(10, 117))
-        ctrl.set_cc(74, utils.randint(40, 80))
+        ctrl.set_cc(10, utils.r.randint(10, 117))
+        ctrl.set_cc(74, utils.r.randint(40, 80))
 
     if tick % 11:
         ctrl.set_cc(1, tick % 2 * 2)
@@ -30,7 +30,7 @@ async def fast_boy(ctrl: MidiController, tick: int):
     if utils.coin_flip(0.20):
         await ctrl.play_note(
             next(notes) + 12 + next(maybe_8va),
-            abs(tick % 7 - tick % 5 + tick % 3) * 6 + utils.randint(0, 60),
+            abs(tick % 7 - tick % 5 + tick % 3) * 6 + utils.r.randint(0, 60),
             4,
         )
 
