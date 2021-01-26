@@ -6,6 +6,14 @@ import mido
 
 
 class MidiController:
+    """A device for triggering note and other CC parameter events on a particular MIDI channel.
+
+    Use as a standalone or connect to a `Sequencer` instance via the `Sequencer.register` method.
+
+    Args:
+        channel: the MIDI channel to send messages on.
+    """
+
     def __init__(self, channel: int):
         self.channel = channel
         self.port = None
@@ -15,19 +23,23 @@ class MidiController:
         self.port = port
 
     def reset(self):
+        """Send `note_off` messages for any currently playing notes."""
         for note, task in self.note_tasks.items():
             task.cancel()
             self.note_off(note)
 
     def note_off(self, note: int):
+        """Send a `note_off` MIDI message with the given `note` value."""
         self.port.send(mido.Message("note_off", note=note, channel=self.channel))
 
     def note_on(self, note: int, velocity: int):
+        """Send a `note_on` MIDI message with the given `note` and `velocity` values."""
         self.port.send(
             mido.Message("note_on", note=note, velocity=velocity, channel=self.channel)
         )
 
     def set_cc(self, control: int, value: int):
+        """Send a MIDI message to CC `control` with the given `value`."""
         self.port.send(
             mido.Message(
                 "control_change", control=control, value=value, channel=self.channel
@@ -35,6 +47,7 @@ class MidiController:
         )
 
     async def play_note(self, note: int, velocity: int, duration: float):
+        """Play a `note` at a `velocity` for a `duration` (in seconds)."""
         if note in self.note_tasks:
             self.note_tasks[note].cancel()
             self.note_off(note)
