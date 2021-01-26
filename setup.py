@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="lucier",
-    version="0.0.1",
+    version="0.0.2",
     author="Jacob Lurye",
     description="Sequence MIDI messages using a Flask-style interface.",
     long_description=long_description,
