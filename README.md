@@ -1,4 +1,4 @@
-Sequence MIDI messages using a [`Flask`](https://github.com/pallets/flask)-style interface. Very much a work-in-progress.
+Sequence MIDI messages using a [`Flask`](https://github.com/pallets/flask)-style interface.
 
 ### Installation
 
