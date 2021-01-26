@@ -79,10 +79,12 @@ class Sequencer:
     """
 
     def __init__(self, output_device: str = "IAC Driver Bus 1", tps=100):
+        self.tps = tps
+        self.spt = 1 / tps
         self.port = mido.open_output(output_device, autoreset=True)
         self.generators: List[Generator] = []
         self.controllers: List[MidiController] = []
-        self.tick = 0
+        self.tick = 1
 
     def register(self, controllers: List[MidiController]):
         """Decorator for an asynchronous function that takes a `MidiController` and
@@ -117,7 +119,7 @@ class Sequencer:
             self.tick += 1
 
     def play(self):
-        """Run the sequencer, starting from a tick value of 0."""
+        """Run the sequencer, starting from a tick value of 1."""
         if self.generators == []:
             raise Exception("sequencer has no generators")
 
@@ -126,3 +128,4 @@ class Sequencer:
         except KeyboardInterrupt:
             for controller in self.controllers:
                 controller.reset()
+            self.tick = 1
