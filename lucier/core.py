@@ -6,7 +6,7 @@ import mido
 
 
 class MidiController:
-    """A device for triggering note and other CC parameter events on a particular MIDI channel.
+    """Trigger note and other CC parameter events on a particular MIDI channel.
 
     Use as a standalone or connect to a `Sequencer` instance via the `Sequencer.register` method.
 
@@ -60,21 +60,44 @@ Generator = Callable[[MidiController, int], NoReturn]
 
 
 class Sequencer:
-    def __init__(self, output_port: str = "IAC Driver Bus 1", bpm=120, tps=100):
-        self.bpm = bpm
-        self.spt = bpm / 60 / tps
-        self.port = mido.open_output(output_port, autoreset=True)
+    """Provide time data to sets of MidiControllers, triggering time-based events.
+
+    Args:
+        output_device: the name of the MIDI output device to use.
+        tps: ticks per second, how many time events are fired per second.
+
+    Examples:
+        >>> s = Sequencer()
+        >>> @s.register([MidiController(1), MidiController(2)])
+        ... async def music_generator(ctrl, tick):
+        ...     ctrl.play_note(60, 60, 1)
+
+    Todos:
+        Shift from using ticks per second to configure the sequencer's speed
+        to beats per minute and pulses per beat. This allows for configuring speed
+        and rhythmic resolution separately, via BPM and PPB respectively.
+    """
+
+    def __init__(self, output_device: str = "IAC Driver Bus 1", tps=100):
+        self.port = mido.open_output(output_device, autoreset=True)
         self.generators: List[Generator] = []
         self.controllers: List[MidiController] = []
         self.tick = 0
 
     def register(self, controllers: List[MidiController]):
+        """Decorator for an asynchronous function that takes a `MidiController` and
+        the current `tick` as its arguments.
+
+        Every time this `Sequencer` instance's `tick` value increases, it will call
+        this function with the updated tick value, once for each `MidiController` in
+        the provided list of `controllers`.
+        """
         self.controllers.extend(controllers)
 
         for ctrl in controllers:
             ctrl._set_port(self.port)
 
-        def decorator(generator):
+        def decorator(generator: Generator):
             @functools.wraps(generator)
             async def wrapped(tick: int):
                 for ctrl in controllers:
@@ -94,6 +117,7 @@ class Sequencer:
             self.tick += 1
 
     def play(self):
+        """Run the sequencer, starting from a tick value of 0."""
         if self.generators == []:
             raise Exception("sequencer has no generators")
 
