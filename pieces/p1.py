@@ -1,12 +1,12 @@
 from lucier import Sequencer, MidiController, utils
 
-one = utils.random_fragments(
+one = utils.random_sequences(
     [
         [52 - 12, 66 - 12, 73 - 12, 75 - 12, 73 - 12],
         [64 - 12, 61 - 12, 75 - 12, 61 - 12],
     ]
 )
-two = utils.random_fragments(
+two = utils.random_sequences(
     [
         [54 - 12, 66 - 12, 73 - 12, 76 - 12, 73 - 12],
         [75 - 12, 76 - 12, 75 - 12, 76 - 12],

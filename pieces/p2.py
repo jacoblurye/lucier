@@ -27,14 +27,14 @@ def get_note(tick: int, chords=lead_chords):
         return next(chords[3])
 
 
-up = utils.maybe_8va(4)
-rare_up = utils.maybe_8va(10)
+up = utils.maybe_octave(4)
+rare_up = utils.maybe_octave(10)
 mult = utils.random_iter([1, 2])
 
 
 @s.register([MidiController(c) for c in [0, 1, 2, 11, 12, 13]])
 async def harps(ctrl: MidiController, tick: int):
-    ratio = utils.incperc(tick, 0.001)
+    ratio = utils.incrat(tick, 0.001)
     if (
         utils.every_n_ticks(75, tick + utils.r.randint(-20, 20))
         and utils.coin_flip(0.9 * ratio)
@@ -68,7 +68,7 @@ async def synth(ctrl: MidiController, tick: int):
 
 @s.register([MidiController(c) for c in range(3, 9)])
 async def strings(ctrl: MidiController, tick: int):
-    ratio = utils.incperc(tick, 0.001)
+    ratio = utils.incrat(tick, 0.001)
     period = 100 + (ctrl.channel - 3) // 3 * 50
     ctrl.set_cc(1, utils.sine(tick, 70 + 15 * ratio, 90 + 36 * ratio, period, 50))
     ctrl.set_cc(11, utils.sine(tick, 10 + 50 * ratio, 90 + 36 * ratio, period, 50))
